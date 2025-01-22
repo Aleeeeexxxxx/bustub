@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bitset>
+#include <cstddef>
 #include <memory>
 #include <mutex>  // NOLINT
 #include <string>
@@ -31,7 +32,10 @@ class HyperLogLog {
    *
    * @returns cardinality value
    */
-  auto GetCardinality() { return cardinality_; }
+  auto GetCardinality() {
+    std::lock_guard<std::mutex> lock(cardinality_lock);
+    return cardinality_;
+  }
 
   /**
    * @brief Adds a value into the HyperLogLog.
@@ -79,10 +83,17 @@ class HyperLogLog {
    */
   auto PositionOfLeftmostOne(const std::bitset<BITSET_CAPACITY> &bset) const -> uint64_t;
 
+  auto ComputeBucket(const std::bitset<BITSET_CAPACITY> &bset) -> int;
+
   /** @brief Cardinality value. */
   size_t cardinality_;
 
   /** @todo (student) can add their data structures that support HyperLogLog */
+  size_t n_bits_;
+  std::vector<uint64_t> buckets_;
+
+  std::mutex buckets_lock_;
+  std::mutex cardinality_lock;
 };
 
 }  // namespace bustub

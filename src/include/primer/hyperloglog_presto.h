@@ -82,7 +82,14 @@ class HyperLogLogPresto {
   /** @brief Storing cardinality value */
   uint64_t cardinality_;
 
-  // TODO(student) - can add more data structures as required
+  int16_t n_leading_bits_;
+
+  auto ComputeBucketIndex(const std::bitset<64> &bset) -> uint64_t;
+  auto PositionOfRightMostOne(const std::bitset<64> &bset) const -> uint64_t;
+  auto GetBucketValue(uint64_t index) -> uint64_t;
+  auto SetBucketValue(uint64_t index, uint64_t value) -> void;
+  auto CalCardinality(double sum) -> uint64_t;
+  auto CalBucketSum() -> double;
 };
 
 }  // namespace bustub
